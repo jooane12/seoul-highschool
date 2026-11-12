@@ -565,7 +565,7 @@ footer a{ color:var(--muted); }
   </div>
   <p class="fine" style="margin-top:10px">근거: 서울특별시교육청 「2027학년도 교육감 선발 후기고 입학원서 작성 · 제출 업무편람」 14~15쪽 (지원 방법)</p>
   <div class="disclaim">
-    <b>이 페이지는 연습용입니다.</b> 입력한 지망 학교와 집 주소는 학교에 전달되거나 저장되지 않습니다. 집 주소는 길찾기 좌표를 찾을 때만 지도 검색 서비스(OpenStreetMap)로 보내집니다. 실제 지망 학교는 학교에서 배부하는 원서와 가조사서에 작성해 주십시오. 세부 사항은 담임교사 또는 진로진학상담부에 문의해 주세요.
+    <b>이 페이지는 연습용입니다.</b> 입력한 지망 학교와 집 주소는 학교에 전달되거나 저장되지 않습니다.<span id="addrPrivacy"> 집 주소는 길찾기 좌표를 찾을 때만 지도 검색 서비스(OpenStreetMap)로 보내집니다.</span> 실제 지망 학교는 학교에서 배부하는 원서와 가조사서에 작성해 주십시오. 세부 사항은 담임교사 또는 진로진학상담부에 문의해 주세요.
   </div>
 </section>
 </div>
@@ -592,6 +592,9 @@ var DEFAULT = { gun:"동부", sex:"남" };        // 경희중학교 기본값
 var GUN_OF = {}; GUNS.forEach(function(g){ g[1].forEach(function(gu){ GUN_OF[gu] = g[0]; }); });
 function gusOf(gun){ for(var i=0;i<GUNS.length;i++) if(GUNS[i][0]===gun) return GUNS[i][1]; return []; }
 
+// 제한 모드: 외부 서버 요청이 막힌 환경(예: Claude 아티팩트)용 빌드에서 window.HS_LIMITED = true
+var LIMITED = !!window.HS_LIMITED;
+var SITE_URL = "https://jooane12.github.io/seoul-highschool/";
 var store = {
   get:function(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
   set:function(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
@@ -677,7 +680,7 @@ function renderHeader(){
   h += '<span class="cnt j"><b>' + jasa + '</b> 자율형 사립고</span>';
   h += '<span class="cnt x"><b>' + cnt[other] + '</b> ' + (other==="남"?"남자":"여자") + '고등학교 · 지원 불가</span>';
   $("#counts").innerHTML = h;
-  $("#mapLead").textContent = profile.gun + "학교군의 일반고와 자사고를 좌표대로 표시했습니다. 학교 표시를 누르면 학교 유형, 학생·학급 현황, 집에서 가는 길, 급식과 학사일정이 나옵니다.";
+  $("#mapLead").textContent = profile.gun + "학교군의 일반고와 자사고를 좌표대로 표시했습니다. 학교 표시를 누르면 학교 유형, 학생·학급 현황, " + (LIMITED ? "학교까지 가는 길 링크가" : "집에서 가는 길, 급식과 학사일정이") + " 나옵니다.";
   var lg = '<span class="lg ' + (profile.sex==="남"?"b":"g") + '"><i></i>' + (profile.sex==="남"?"남자":"여자") + '고등학교</span>'
          + '<span class="lg c"><i></i>남녀공학</span>'
          + '<span class="lg j"><i></i>테두리: 학교장 선발 (자사고 등)</span>'
@@ -888,12 +891,24 @@ function showDetail(id){
 
   h += '<div class="dgrid">';
   h += '<div class="dsec"><h4>학생 · 학급 현황</h4>' + statsHtml(s) + '</div>';
+  if(LIMITED){
+    // 제한 모드(외부 요청이 막힌 곳): 주소 변환 대신 도착지가 설정된 지도 링크
+    var nmq = encodeURIComponent(s.full);
+    h += '<div class="dsec"><h4>학교까지 가는 길 <small>지도 앱에서 출발지를 넣으세요</small></h4><div class="btnrow">'
+       + (s.lat!=null ? '<a class="btn kakao" target="_blank" rel="noopener" href="https://map.kakao.com/link/to/' + nmq + ',' + s.lat + ',' + s.lng + '">카카오맵 길찾기</a>' : '')
+       + '<a class="btn naver" target="_blank" rel="noopener" href="https://map.naver.com/p/search/' + nmq + '">네이버지도에서 학교 찾기</a></div>'
+       + '<p class="fine">카카오맵은 이 학교가 도착지로 정해진 길찾기 화면이 열립니다. 집 주소를 넣어 바로 길찾기 버튼을 만드는 기능은 <a href="' + SITE_URL + '" target="_blank" rel="noopener">공유 사이트</a>에서 쓸 수 있습니다.</p></div>';
+    h += '</div>';
+    h += '<div class="dsec"><h4>학사일정 · 오늘의 급식</h4><p class="fine" style="margin:0">학사일정과 급식은 교육청 서버에서 실시간으로 불러오는 정보라 이 화면에서는 볼 수 없습니다. <a href="' + SITE_URL + '" target="_blank" rel="noopener">공유 사이트</a>나 학교 홈페이지에서 확인해 주세요.</p></div>';
+    detail.innerHTML = h;
+    return;
+  }
   h += '<div class="dsec"><h4>집에서 가는 길 <small>네이버지도 · 카카오맵에서 열립니다</small></h4>'
      + '<form class="addrrow" id="addrForm"><input id="addr" type="text" placeholder="예) 서울특별시 동대문구 경희대로 26" value="' + esc(homeAddr) + '" aria-label="우리 집 주소">'
      + '<button class="btn" type="submit">길찾기</button></form><div id="route"><p class="fine" style="margin:0">집 주소를 넣으면 길찾기 버튼이 나옵니다. 도로명 주소로 넣으면 잘 찾습니다.</p></div></div>';
   h += '</div>';
   h += '<div class="dgrid">';
-  h += '<div class="dsec"><h4>다가오는 학사일정 <small>NEIS · 가까운 일정 일부</small></h4><div id="sched"><div class="empty">불러오는 중…</div></div></div>';
+  h += '<div class="dsec"><h4>다가오는 학사일정 <small>NEIS · 가까운 일정 일부</small></h4><div id="schoolSched"><div class="empty">불러오는 중…</div></div></div>';
   h += '<div class="dsec"><h4>오늘의 급식 <small>NEIS</small></h4><div id="meal"><div class="empty">불러오는 중…</div></div></div>';
   h += '</div>';
   detail.innerHTML = h;
@@ -919,7 +934,7 @@ function neis(service, s, params){
 function loadNeis(s){
   var today = new Date(), to = new Date(today.getTime() + 60*864e5);
   neis("SchoolSchedule", s, { AA_FROM_YMD:ymd(today), AA_TO_YMD:ymd(to) }).then(function(rows){
-    var box = document.getElementById("sched"); if(!box || selId!==s.id) return;
+    var box = document.getElementById("schoolSched"); if(!box || selId!==s.id) return;
     if(rows===null){ box.innerHTML = '<div class="empty">학사일정을 불러오지 못했습니다.</div>'; return; }
     var seen = {}, list = [];
     rows.sort(function(a,b){ return a.AA_YMD.localeCompare(b.AA_YMD); }).forEach(function(r){ var k = r.AA_YMD + r.EVENT_NM; if(!seen[k]){ seen[k]=1; list.push(r); } });
@@ -1198,6 +1213,7 @@ $("#check").addEventListener("click", function(){
 });
 
 /* ===================== 시작 ===================== */
+if(LIMITED) $("#addrPrivacy").hidden = true;
 function renderAll(profileChanged){
   renderHeader(); renderMap(); renderChips(); paint();
   if(profileChanged){
