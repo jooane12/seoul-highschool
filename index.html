@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>서울 고등학교 길잡이</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --panel:#fff; --ink:#1c2230; --muted:#6b7385; --line:#e3e6ec;
+    --brand:#2f6bff; --brand-soft:#e8efff; --naver:#03a94d; --kakao:#f7c600;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#12151c; --panel:#1b2029; --ink:#e8ebf2; --muted:#98a1b5; --line:#2c3340; --brand:#6b95ff; --brand-soft:#212c4a;}
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{font-family:"Pretendard","Malgun Gothic",system-ui,sans-serif;background:var(--bg);color:var(--ink);display:flex}
+  aside{width:340px;flex:none;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;height:100%}
+  .brand{padding:18px 18px 10px}
+  .brand h1{font-size:19px;margin:0 0 2px}
+  .brand p{margin:0;color:var(--muted);font-size:12.5px}
+  .sec{padding:10px 18px}
+  .sec label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px}
+  input[type=text],select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:14px;outline:none}
+  input:focus,select:focus{border-color:var(--brand)}
+  .row2{display:flex;gap:8px;margin-top:8px} .row2 select{padding:8px 10px;font-size:13px}
+  button.primary{width:100%;padding:11px;border:0;border-radius:10px;background:var(--brand);color:#fff;font-weight:700;font-size:14px;cursor:pointer}
+  button.primary:disabled{opacity:.45;cursor:not-allowed}
+  #results{flex:1;overflow:auto;padding:0 10px 10px;min-height:80px}
+  .item{padding:10px;border-radius:10px;cursor:pointer;border:1px solid transparent}
+  .item:hover{background:var(--bg)}
+  .item.sel{background:var(--brand-soft);border-color:var(--brand)}
+  .item b{font-size:14px}
+  .item small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+  .hint{color:var(--muted);font-size:12.5px;padding:8px}
+  .foot{padding:8px 18px 14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted)}
+  main{flex:1;min-width:0;height:100%;overflow:auto;padding:22px 26px}
+  .empty{display:flex;height:100%;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:14px;line-height:1.7}
+  .hero h2{margin:0 0 6px;font-size:24px}
+  .hero .addr{color:var(--muted);font-size:13.5px;margin-bottom:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin-top:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .card h3{margin:0 0 10px;font-size:15px}
+  .span2{grid-column:1/-1}
+  .sub{color:var(--muted);font-size:12.5px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{padding:7px 8px;border-bottom:1px solid var(--line)} th{color:var(--muted);font-weight:600;font-size:12px}
+  td:not(:first-child),th:not(:first-child){text-align:right} td:first-child,th:first-child{text-align:left}
+  .stat3{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:12px}
+  .big{font-size:24px;font-weight:800} .big small{font-size:13px;font-weight:600;color:var(--muted);margin-left:3px}
+  .kv{display:grid;grid-template-columns:96px 1fr;gap:6px 10px;font-size:13.5px;margin:0}
+  .kv dt{color:var(--muted)} .kv dd{margin:0;word-break:break-all}
+  .tag{display:inline-block;background:var(--brand-soft);color:var(--brand);border-radius:6px;padding:3px 9px;font-size:12px;font-weight:600;margin:0 5px 5px 0}
+  .warn{background:#fff6e0;color:#7a5200;border-radius:8px;padding:7px 10px;font-size:12px;margin-top:8px}
+  @media (prefers-color-scheme:dark){.warn{background:#3a2e10;color:#f0cf85}}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  a.btn{display:inline-block;padding:9px 13px;border-radius:9px;font-weight:700;font-size:13px;text-decoration:none;color:#fff}
+  a.btn.n{background:var(--naver)} a.btn.k{background:var(--kakao);color:#222}
+  .btns .lab{width:100%;font-size:12px;font-weight:600;color:var(--muted);margin-top:4px}
+  a.link{color:var(--brand);font-weight:600;text-decoration:none}
+  .meal{margin:0 0 10px} .meal b{font-size:13px} .meal div{font-size:13px;line-height:1.6}
+  ul.plain{margin:0;padding:0;list-style:none;font-size:13.5px} ul.plain li{padding:6px 0;border-bottom:1px solid var(--line);display:flex;gap:10px}
+  ul.plain li span:first-child{color:var(--muted);min-width:78px}
+  @media (max-width:780px){
+    body{flex-direction:column;overflow:auto} aside{width:100%;height:auto}
+    #results{max-height:260px} main{height:auto;overflow:visible;padding:16px} .grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand">
+    <h1>🏫 서울 고등학교 길잡이</h1>
+    <p>학교를 검색하고 집에서 가는 길을 지도 앱으로 확인하세요</p>
+  </div>
+  <div class="sec">
+    <label for="q">① 학교 이름 검색</label>
+    <input id="q" type="text" placeholder="예: 휘문, 경기, 세화" autocomplete="off">
+    <div class="row2">
+      <select id="fDist" aria-label="자치구"><option value="">자치구 전체</option></select>
+      <select id="fType" aria-label="고교 구분"><option value="">유형 전체</option></select>
+    </div>
+  </div>
+  <div id="results"><div class="hint">학교 목록을 불러오는 중…</div></div>
+  <div class="sec">
+    <label for="addr">② 우리 집 주소</label>
+    <input id="addr" type="text" placeholder="예: 서울특별시 송파구 올림픽로 300">
+  </div>
+  <div class="sec" style="padding-top:0">
+    <button id="go" class="primary" disabled>학교 정보 · 길찾기 링크 보기</button>
+  </div>
+  <div class="foot" id="foot">학교정보: 교육부 NEIS · 길찾기: 네이버지도/카카오맵. 입력한 주소는 저장되지 않습니다.</div>
+</aside>
+
+<main id="view"><div class="empty">왼쪽에서 학교를 선택하고<br>집 주소를 입력한 뒤 버튼을 눌러 주세요.</div></main>
+
+<script>
+const $ = s => document.querySelector(s);
+const YEAR = new Date().getFullYear();
+let SCHOOLS = [], selected = null, busy = false, SOURCE_DATE = '';
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ymd = d => d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+const fmtYmd = s => s && s.length===8 ? `${+s.slice(4,6)}월 ${+s.slice(6,8)}일` : '-';
+const typeLabel = s => s.TYPE + (s.TYPE_DETAIL ? ` (${s.TYPE_DETAIL})` : '');
+const district = s => (/서울특별시\s+(\S+[구])/.exec(s.ORG_RDNMA||'')||[])[1] || '';
+
+/* ---------- 학교 목록 (schools.json) ---------- */
+async function loadSchools(){
+  try{
+    const j = await (await fetch('schools.json')).json();
+    SCHOOLS = j.schools; SOURCE_DATE = j.statsYear ? `${j.statsYear}년 공시, ${j.statsUpdated}` : (j.statsUpdated||'');
+    $('#foot').innerHTML += ` 학교 목록 기준일: ${esc(j.updated)}`;
+    const ds=[...new Set(SCHOOLS.map(district).filter(Boolean))].sort();
+    $('#fDist').innerHTML='<option value="">자치구 전체</option>'+ds.map(d=>`<option>${d}</option>`).join('');
+    const ts=['일반고','자사고','특목고','특성화고'].filter(t=>SCHOOLS.some(s=>s.TYPE===t));
+    $('#fType').innerHTML='<option value="">유형 전체</option>'+ts.map(d=>`<option>${esc(d)}</option>`).join('');
+    renderResults();
+  }catch{
+    $('#results').innerHTML='<div class="hint">학교 목록(schools.json)을 불러오지 못했습니다.<br>파일을 더블클릭해 열었다면 웹 서버(예: python -m http.server)나 GitHub Pages 주소로 접속하세요.</div>';
+  }
+}
+function renderResults(){
+  const q=$('#q').value.trim().replace(/\s+/g,''), d=$('#fDist').value, t=$('#fType').value;
+  const rows=SCHOOLS.filter(s=>(!q||s.SCHUL_NM.includes(q))&&(!d||district(s)===d)&&(!t||s.TYPE===t));
+  const box=$('#results'); box.innerHTML='';
+  if(!rows.length){ box.innerHTML='<div class="hint">검색 결과가 없습니다.</div>'; return; }
+  box.insertAdjacentHTML('beforeend',`<div class="hint">${rows.length}개교</div>`);
+  rows.slice(0,100).forEach(s=>{
+    const el=document.createElement('div'); el.className='item'+(selected&&selected.SD_SCHUL_CODE===s.SD_SCHUL_CODE?' sel':'');
+    el.innerHTML=`<b>${esc(s.SCHUL_NM)}</b><small>${esc(district(s))} · ${esc(s.FOND_SC_NM)} · ${esc(s.COEDU_SC_NM)} · ${esc(typeLabel(s))}</small>`;
+    el.onclick=()=>{ selected=s; document.querySelectorAll('.item').forEach(x=>x.classList.remove('sel')); el.classList.add('sel'); $('#go').disabled=false; };
+    box.appendChild(el);
+  });
+  if(rows.length>100) box.insertAdjacentHTML('beforeend','<div class="hint">상위 100개만 표시합니다. 검색어를 더 입력해 주세요.</div>');
+}
+['#q','#fDist','#fType'].forEach(id=>$(id).addEventListener('input',renderResults));
+
+/* ---------- NEIS (인증키 없이 직접 호출: 최대 5건) ---------- */
+async function neisRows(service, s, params){
+  try{
+    const u=new URL('https://open.neis.go.kr/hub/'+service);
+    Object.entries({Type:'json',ATPT_OFCDC_SC_CODE:s.ATPT_OFCDC_SC_CODE,SD_SCHUL_CODE:s.SD_SCHUL_CODE,...params}).forEach(([k,v])=>u.searchParams.set(k,v));
+    const j=await (await fetch(u)).json();
+    const row=(j[service]||[]).find(x=>x.row);
+    return row?row.row:[];
+  }catch{ return null; }
+}
+
+/* ---------- 주소 → 좌표 (집 주소만, OpenStreetMap Nominatim) ---------- */
+async function geocodeHome(addr){
+  const clean=addr.replace(/\(.*?\)/g,'').trim();
+  const tries=[clean, clean.replace(/^서울특별시\s*/,'서울 '), clean.replace(/\s+\d+(-\d+)?\s*(번지|호)?\s*$/,'')];
+  for(const t of [...new Set(tries)]){
+    try{
+      const u=new URL('https://nominatim.openstreetmap.org/search');
+      Object.entries({format:'json',limit:'1',countrycodes:'kr','accept-language':'ko',q:t}).forEach(([k,v])=>u.searchParams.set(k,v));
+      const j=await (await fetch(u)).json();
+      if(j[0]) return {lat:+j[0].lat,lng:+j[0].lon};
+    }catch{}
+    await new Promise(r=>setTimeout(r,1100));
+  }
+  return null;
+}
+const to3857=p=>{const x=p.lng*20037508.34/180,y=Math.log(Math.tan((90+p.lat)*Math.PI/360))/(Math.PI/180)*20037508.34/180;return `${x.toFixed(1)},${y.toFixed(1)}`;};
+function mapLinks(h,s){
+  const nm=encodeURIComponent(s.SCHUL_NM), home=encodeURIComponent('우리 집'), p={lat:s.lat,lng:s.lng};
+  const naver=m=>`https://map.naver.com/p/directions/${to3857(h)},${home}/${to3857(p)},${nm}/-/${m}`;
+  return {nTransit:naver('transit'), nCar:naver('car'), nWalk:naver('walk'),
+          kakao:`https://map.kakao.com/link/from/${home},${h.lat},${h.lng}/to/${nm},${s.lat},${s.lng}`};
+}
+
+/* ---------- 렌더링 ---------- */
+function mealHtml(rows){
+  if(rows===null) return `<div class="sub">급식 정보를 불러오지 못했습니다.</div>`;
+  if(!rows.length) return `<div class="sub">오늘은 급식 정보가 없습니다. (주말·방학·미등록)</div>`;
+  return rows.map(r=>`<div class="meal"><b>${esc(r.MMEAL_SC_NM)}</b><div>${String(r.DDISH_NM).replace(/\s*\([\d.]+\)/g,'').split(/<br\s*\/?>/i).map(esc).join('<br>')}</div></div>`).join('');
+}
+function scheduleHtml(rows){
+  if(rows===null) return `<div class="sub">학사일정을 불러오지 못했습니다.</div>`;
+  const seen=new Set(), list=[];
+  rows.sort((a,b)=>a.AA_YMD.localeCompare(b.AA_YMD)).forEach(r=>{const k=r.AA_YMD+r.EVENT_NM; if(!seen.has(k)){seen.add(k);list.push(r);}});
+  if(!list.length) return `<div class="sub">향후 60일간 등록된 일정이 없습니다.</div>`;
+  return `<ul class="plain">${list.map(r=>`<li><span>${fmtYmd(r.AA_YMD)}</span><span>${esc(r.EVENT_NM)}</span></li>`).join('')}</ul><div class="sub" style="margin-top:6px">가까운 일정 일부만 표시합니다.</div>`;
+}
+function routeCard(s,home){
+  let body;
+  if(!home) body=`<div class="warn">입력하신 주소를 찾지 못했습니다. "서울 송파구 올림픽로 300"처럼 도로명 주소로 다시 입력해 보세요.</div>`;
+  else if(s.lat==null) body=`<div class="warn">학교 위치 좌표가 없어 링크를 만들 수 없습니다. 학교 이름으로 지도 앱에서 직접 검색해 주세요.</div>`;
+  else{
+    const l=mapLinks(home,s);
+    body=`<div class="btns">
+      <div class="lab">네이버지도</div>
+      <a class="btn n" target="_blank" rel="noopener" href="${l.nTransit}">대중교통</a>
+      <a class="btn n" target="_blank" rel="noopener" href="${l.nCar}">자동차</a>
+      <a class="btn n" target="_blank" rel="noopener" href="${l.nWalk}">도보</a>
+      <div class="lab">카카오맵</div>
+      <a class="btn k" target="_blank" rel="noopener" href="${l.kakao}">길찾기 (대중교통·자동차·도보)</a></div>
+      <div class="sub" style="margin-top:8px">누르면 지도 앱이 새 창에서 열리며, 소요 시간·거리·노선이 표시됩니다. 출발지는 입력한 주소 근처로 찍히므로 정확한 위치는 지도에서 확인하세요.</div>`;
+  }
+  return `<div class="card span2"><h3>🗺 우리 집 → ${esc(s.SCHUL_NM)} 길찾기</h3>${body}</div>`;
+}
+const nf = n => (n==null ? '-' : Number(n).toLocaleString('ko-KR'));
+function statsCard(s){
+  const st = s.stats;
+  if(!st) return `<div class="card span2"><h3>👥 학생·학급 현황</h3><div class="sub">이 학교의 학생·학급 정보가 아직 준비되지 않았습니다. 학교알리미에서 확인해 주세요.</div></div>`;
+  const rows = [0,1,2].map(i=>{
+    const g=st.byGrade&&st.byGrade[i]||{}, tot=(g.boys==null||g.girls==null)?null:g.boys+g.girls;
+    return `<tr><td>${i+1}학년</td><td>${nf(st.classesByGrade&&st.classesByGrade[i])}</td><td>${nf(g.boys)}</td><td>${nf(g.girls)}</td><td>${nf(tot)}</td></tr>`;
+  }).join('');
+  const hasSp = st.special && (st.special.classes||st.special.students);
+  const spRow = hasSp ? `<tr><td>특수학급</td><td>${nf(st.special.classes)}</td><td colspan="2"></td><td>${nf(st.special.students)}</td></tr>` : '';
+  const totRow = `<tr><th>합계</th><th>${nf(st.classes)}</th><th></th><th></th><th>${nf(st.students)}</th></tr>`;
+  const sp = '';
+  return `<div class="card span2"><h3>👥 학생·학급 현황</h3>
+    <div class="stat3">
+      <div><div class="big">${nf(st.students)}<small>명</small></div><div class="sub">전체 학생 수</div></div>
+      <div><div class="big">${nf(st.classes)}<small>학급</small></div><div class="sub">전체 학급 수</div></div>
+      <div><div class="big">${nf(st.perClass)}<small>명</small></div><div class="sub">학급당 학생 수</div></div>
+      <div><div class="big">${nf(st.teachers)}<small>명</small></div><div class="sub">교원 수(총계)</div></div>
+    </div>
+    <table><tr><th>학년</th><th>학급 수</th><th>남</th><th>여</th><th>학생 수</th></tr>${rows}${spRow}${totRow}</table>${sp}
+    <div class="sub" style="margin-top:6px">출처: 학교알리미 공시정보 (${esc(SOURCE_DATE)} 수집). 공시 기준일은 학교알리미에서 확인하세요.</div></div>`;
+}
+function admissionText(s){
+  const d = s.TYPE_DETAIL||'';
+  if(s.TYPE==='자사고') return (d.includes('전국')
+    ? '하나고는 전국 단위로 모집하며, 서울 방식 자사고와 다른 별도 전형으로 선발합니다. 모집 요강을 확인하세요.'
+    : '자율형 사립고는 후기 모집이며, 일반고와 달리 학교별로 원서를 접수하고 학교장이 선발하는 방식으로 알려져 있습니다. 일부 학교는 추첨으로 선발합니다.');
+  if(s.TYPE==='일반고') return d==='자율형 공립고'
+    ? '자율형 공립고는 후기 모집이며, 일반고와 같은 방식으로 지원·배정되는 것으로 알려져 있습니다. 학교별 특색 교육과정을 운영합니다.'
+    : '일반고는 후기 모집이며, 원하는 학교를 자유롭게 고르는 방식이 아니라 거주 지역(학교군)을 기준으로 지원·배정되는 방식으로 알려져 있습니다.';
+  if(s.TYPE==='특목고') return (d==='외국어고'||d==='국제고')
+    ? '외국어고·국제고는 후기 모집이며, 학교별로 원서를 접수하고 학교장이 선발하는 방식으로 알려져 있습니다.'
+    : '과학고·예술고·체육고·마이스터고는 전기 모집이며, 학교별로 선발합니다. 과학고는 일정이 다를 수 있으니 요강을 확인하세요.';
+  if(s.TYPE==='특성화고') return '특성화고는 전기 모집이며, 학과별로 선발합니다. 일반고와 전형이 별도로 운영됩니다.';
+  return '이 학교의 지원 방법은 전형 요강을 확인하세요.';
+}
+function admissionCard(s){
+  return `<div class="card"><h3>📝 입학 전형 안내</h3>
+    <dl class="kv"><dt>고교 구분</dt><dd>${esc(typeLabel(s))}</dd><dt>모집 시기</dt><dd>${esc(s.ADMIT)||'-'} <span class="sub">(전기/후기)</span></dd></dl>
+    ${s.TYPE_NOTE?`<div class="warn">${esc(s.TYPE_NOTE)}</div>`:''}
+    <div class="sub" style="margin-top:8px">${admissionText(s)}</div>
+    <div class="warn">입학 전형은 해마다 바뀔 수 있습니다. 지원 자격, 일정, 배정 방식은 반드시 최신 요강으로 확인하세요.</div>
+    <a class="link" target="_blank" rel="noopener" href="https://www.sen.go.kr/">서울특별시교육청 ↗</a>
+    <div class="sub">홈페이지에서 '고입 전형' 또는 '고입 정보'를 검색해 최신 요강을 확인하세요.</div></div>`;
+}
+function graduateCard(s){
+  return `<div class="card"><h3>🎓 졸업생 진로 현황</h3>
+    <div class="sub">졸업생의 진학·진로 현황은 학교알리미에서 학교별로 공시됩니다. 이 페이지에는 아직 담지 못했습니다.</div>
+    <div class="sub" style="margin-top:6px">학교알리미 검색창에 <b>${esc(s.SCHUL_NM)} 졸업생의 진로 현황</b> 처럼 입력하면 볼 수 있습니다.</div>
+    <a class="link" target="_blank" rel="noopener" href="https://www.schoolinfo.go.kr/">학교알리미 바로가기 ↗</a></div>`;
+}
+function infoCards(s, meal, sched){
+  const hp = s.HMPG_ADRES ? (/^https?:/.test(s.HMPG_ADRES)?s.HMPG_ADRES:'http://'+s.HMPG_ADRES) : '';
+  const found = s.FOND_YMD ? s.FOND_YMD.replace(/^(\d{4})(\d{2})(\d{2})$/,'$1년 $2월 $3일') : '-';
+  const foas = s.FOAS_MEMRD ? `${+s.FOAS_MEMRD.slice(-4,-2)}월 ${+s.FOAS_MEMRD.slice(-2)}일` : '-';
+  return `${statsCard(s)}${admissionCard(s)}${graduateCard(s)}
+  <div class="card"><h3>🏷 학교 유형</h3>
+    <dl class="kv">
+      <dt>설립</dt><dd>${esc(s.FOND_SC_NM)||'-'}</dd>
+      <dt>학생 구성</dt><dd>${esc(s.COEDU_SC_NM)||'-'}</dd>
+      <dt>고교 구분</dt><dd>${esc(typeLabel(s))}</dd>
+      <dt>계열</dt><dd>${esc(s.HS_GNRL_BUSNS_SC_NM)||'-'}${s.SPCLY_PURPS_HS_ORD_NM?' · '+esc(s.SPCLY_PURPS_HS_ORD_NM):''}</dd>
+      <dt>주/야간</dt><dd>${esc(s.DGHT_SC_NM)||'-'}</dd>
+      <dt>신입생 선발</dt><dd>${esc(s.ADMIT)||'-'} <span class="sub">(전기/후기)</span></dd>
+      <dt>산업체특별학급</dt><dd>${s.INDST_SPECL_CCCCL_EXST_YN==='Y'?'있음':'없음'}</dd>
+    </dl></div>
+  <div class="card"><h3>📍 위치 · 연락처</h3>
+    <dl class="kv">
+      <dt>도로명 주소</dt><dd>${esc(s.ORG_RDNMA)} ${esc(s.ORG_RDNDA)}</dd>
+      <dt>우편번호</dt><dd>${esc(s.ORG_RDNZC)||'-'}</dd>
+      <dt>관할 교육청</dt><dd>${esc(s.JU_ORG_NM)||'-'}</dd>
+      <dt>전화</dt><dd>${esc(s.ORG_TELNO)||'-'}</dd>
+      <dt>팩스</dt><dd>${esc(s.ORG_FAXNO)||'-'}</dd>
+      <dt>홈페이지</dt><dd>${hp?`<a class="link" target="_blank" rel="noopener" href="${esc(hp)}">${esc(s.HMPG_ADRES)} ↗</a>`:'-'}</dd>
+    </dl></div>
+  <div class="card"><h3>🏛 연혁</h3>
+    <dl class="kv"><dt>설립일</dt><dd>${found}</dd><dt>개교기념일</dt><dd>${foas}</dd><dt>영문 교명</dt><dd>${esc(s.ENG_SCHUL_NM)||'-'}</dd></dl></div>
+  <div class="card"><h3>📅 다가오는 학사일정</h3>${scheduleHtml(sched)}</div>
+  <div class="card"><h3>🍚 오늘의 급식</h3>${mealHtml(meal)}</div>
+  <div class="span2 sub">출처: 교육부 NEIS 교육정보 개방 포털. 학생·학급 현황은 학교알리미 공시 기준이며, 그 밖의 공시 항목은 학교알리미에서 확인하세요.
+    <a class="link" target="_blank" rel="noopener" href="https://www.schoolinfo.go.kr/">학교알리미 ↗</a></div>`;
+}
+
+/* ---------- 실행 ---------- */
+$('#go').addEventListener('click', async ()=>{
+  if(!selected||busy) return;
+  busy=true; $('#go').disabled=true;
+  const s=selected, addr=$('#addr').value.trim(), view=$('#view');
+  view.innerHTML='<div class="empty">불러오는 중…</div>';
+  try{
+    const today=new Date(), to=new Date(today.getTime()+60*864e5);
+    const [meal,sched,home]=await Promise.all([
+      neisRows('mealServiceDietInfo',s,{pSize:'5',MLSV_YMD:ymd(today)}),
+      neisRows('SchoolSchedule',s,{pSize:'5',AA_FROM_YMD:ymd(today),AA_TO_YMD:ymd(to)}),
+      addr?geocodeHome(addr):Promise.resolve(undefined)
+    ]);
+    const tags=[s.TYPE,s.TYPE_DETAIL,s.FOND_SC_NM,s.COEDU_SC_NM,s.DGHT_SC_NM,s.ADMIT&&s.ADMIT+' 모집'].filter(Boolean);
+    const route = home===undefined
+      ? `<div class="card span2"><div class="sub">왼쪽에 집 주소를 입력하면 네이버지도·카카오맵 길찾기 링크가 표시됩니다.</div></div>`
+      : routeCard(s,home);
+    view.innerHTML=`<div class="hero"><h2>${esc(s.SCHUL_NM)}</h2><div class="addr">${esc(s.ORG_RDNMA)}</div>${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}${s.TYPE_NOTE?`<div class="warn" style="margin-top:4px">${esc(s.TYPE_NOTE)}</div>`:''}</div>
+      <div class="grid">${route}${infoCards(s,meal,sched)}</div>`;
+    view.scrollTop=0;
+  }catch{ view.innerHTML='<div class="empty">오류가 발생했습니다. 잠시 후 다시 시도해 주세요.</div>'; }
+  finally{ busy=false; $('#go').disabled=false; }
+});
+
+loadSchools();
+</script>
+</body>
+</html>
