@@ -1205,7 +1205,9 @@ function renderAll(profileChanged){
     $("#result").innerHTML = '<div class="empty">조건이 바뀌었습니다. <b>확인하기</b>를 다시 눌러 보세요.</div>';
   }
 }
-fetch("schools.json").then(function(r){ return r.json(); }).then(function(j){
+// schools.json 을 바꿔 올릴 때마다 DATA_VERSION 도 바꾸면 이전 파일이 캐시에서 나오지 않습니다
+var DATA_VERSION = "2026-11-12b";
+fetch("schools.json?v=" + DATA_VERSION).then(function(r){ return r.json(); }).then(function(j){
   DATA = j; SCHOOLS = j.schools.map(prep);
   SCHOOLS.forEach(function(s){ byId[s.id] = s; });
   $("#allNames").innerHTML = SCHOOLS.map(function(s){ return '<option value="' + esc(s.full) + '">'; }).join("");
