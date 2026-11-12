@@ -30,7 +30,11 @@ python tools/build_stats.py
 python tools/classify.py
 ```
 - NEIS의 고교 구분은 자사고와 자율형 공립고가 섞여 있고 일반고로 전환한 학교도 갱신이 늦어, `tools/classify.py`의 명단으로 보정합니다.
-- **해마다 모집요강이 나오면** `classify.py` 위쪽의 `JASAGO`(자사고 명단)와 `CONVERTED`(전환 학교)를 갱신하세요. 근거 링크는 파일 맨 위에 있습니다.
+- **해마다 모집요강이 나오면** `classify.py` 위쪽의 명단을 갱신하세요. 근거는 파일 맨 위에 있습니다.
+  - `JASAGO`(자사고 명단), `CONVERTED`(일반고 전환 학교)
+  - `ADMIT_OVERRIDE`(모집 시기 직접 지정: 금호·덕수·도선고 후기, 서울미술고 전기)
+  - `FOCUS`(예술·체육·과학중점학급 운영학교와 학급 수 — 업무편람 '지원 방법' 표)
+- 지원 자격 확인 규칙(1·2단계 필수, 외고·국제고·자사고 지원 시 1단계 불가, 중점학급 1개교, 체육특기자 1~4순위)은 `index.html`의 `지원 자격 확인` 부분에 있습니다. 업무편람이 바뀌면 함께 확인하세요.
 - 실행 순서: `build_schools.py` → `build_stats.py` → `classify.py`
 
 ## 2. 내 컴퓨터에서 확인
