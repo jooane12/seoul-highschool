@@ -1206,7 +1206,7 @@ function renderAll(profileChanged){
   }
 }
 // schools.json 을 바꿔 올릴 때마다 DATA_VERSION 도 바꾸면 이전 파일이 캐시에서 나오지 않습니다
-var DATA_VERSION = "2026-11-12b";
+var DATA_VERSION = "2026-11-12c";
 fetch("schools.json?v=" + DATA_VERSION).then(function(r){ return r.json(); }).then(function(j){
   DATA = j; SCHOOLS = j.schools.map(prep);
   SCHOOLS.forEach(function(s){ byId[s.id] = s; });
