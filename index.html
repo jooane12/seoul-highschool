@@ -385,6 +385,8 @@ footer a{ color:var(--muted); }
 .disclaim b{ color:var(--ink); }
 .loaderr{ padding:16px; border-radius:10px; background:var(--seal-soft); border:1px solid var(--seal-line); font-size:14px; }
 </style>
+<!-- 방문 통계: GoatCounter (쿠키 없음, 개인 식별 안 함). 아티팩트용 파일에는 포함되지 않습니다. -->
+<script data-goatcounter="https://kyunghee-hs.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
 
@@ -573,7 +575,7 @@ footer a{ color:var(--muted); }
   </div>
   <p class="fine" style="margin-top:10px">특성화고 일정 근거: 서울특별시교육청 하이잡 「특성화고 입학전형」 (67교). 학교별 세부 사항은 각 학교 입학전형 요강을 확인하세요.<br>지원 방법 근거: 서울특별시교육청 「2027학년도 교육감 선발 후기고 입학원서 작성 · 제출 업무편람」 14~15쪽 (지원 방법)</p>
   <div class="disclaim">
-    <b>이 페이지는 연습용입니다.</b> 입력한 지망 학교와 집 주소는 학교에 전달되거나 저장되지 않습니다.<span id="addrPrivacy"> 집 주소는 길찾기 좌표를 찾을 때만 지도 검색 서비스(OpenStreetMap)로 보내집니다.</span> 실제 지망 학교는 학교에서 배부하는 원서와 가조사서에 작성해 주십시오. 세부 사항은 담임교사 또는 진로진학상담부에 문의해 주세요.
+    <b>이 페이지는 연습용입니다.</b> 입력한 지망 학교와 집 주소는 학교에 전달되거나 저장되지 않습니다.<span id="addrPrivacy"> 집 주소는 길찾기 좌표를 찾을 때만 지도 검색 서비스(OpenStreetMap)로 보내집니다.</span><span id="statsPrivacy"> 이용 현황 파악을 위해 쿠키 없이 개인을 식별하지 않는 방문 수 통계(GoatCounter)만 수집합니다.</span> 실제 지망 학교는 학교에서 배부하는 원서와 가조사서에 작성해 주십시오. 세부 사항은 담임교사 또는 진로진학상담부에 문의해 주세요.
   </div>
 </section>
 </div>
@@ -1221,7 +1223,7 @@ $("#check").addEventListener("click", function(){
 });
 
 /* ===================== 시작 ===================== */
-if(LIMITED) $("#addrPrivacy").hidden = true;
+if(LIMITED){ $("#addrPrivacy").hidden = true; $("#statsPrivacy").hidden = true; }
 function renderAll(profileChanged){
   renderHeader(); renderMap(); renderChips(); paint();
   if(profileChanged){
